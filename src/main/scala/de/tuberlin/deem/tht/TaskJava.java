@@ -14,6 +14,8 @@ public class TaskJava {
 
         SparkSession session = null;
 
+        handleIllegalReflectiveAccessSpark();
+
         try {
             session = SparkSession.builder()
                 .master("local")
@@ -29,5 +31,18 @@ public class TaskJava {
             session.stop();
             System.clearProperty("spark.driver.port");
         }
+    }
+
+    public static void handleIllegalReflectiveAccessSpark(){
+        Module pf = org.apache.spark.unsafe.Platform.class.getModule();
+        Target.class.getModule().addOpens("java.nio", pf);
+        Target.class.getModule().addOpens("java.io", pf);
+
+        Module se = org.apache.spark.util.SizeEstimator.class.getModule();
+        Target.class.getModule().addOpens("java.util", se);
+        Target.class.getModule().addOpens("java.net", se);
+        Target.class.getModule().addOpens("java.lang", se);
+        Target.class.getModule().addOpens("java.lang.ref", se);
+        Target.class.getModule().addOpens("java.util.concurrent", se);
     }
 }

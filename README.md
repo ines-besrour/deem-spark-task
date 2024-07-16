@@ -4,7 +4,7 @@
 
 ### Execution of the Java variant
 
-`mvn package exec:java -Dexec.mainClass=de.tuberlin.deem.tht.TaskJava`
+`mvn package exec:java -Dexec.mainClass=de.tuberlin.deem.tht.TaskJava -Dexec.cleanupDaemonThreads=false`
 
 
 ### Hints
