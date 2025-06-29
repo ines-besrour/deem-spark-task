@@ -35,3 +35,16 @@ The code loads product and review data, filters out reviewed products, and calcu
     --class de.tuberlin.deem.tht.TaskJava \
     --master local[*] /app/jar/takehometest-1.0-SNAPSHOT.jar
    ```
+## Spark Execution Steps
+The code performs the following steps using Apache Spark:
+
+Load products.tsv and reviews.tsv into RDDs.
+Filter out header lines from both datasets.
+Parse products into (productId, (category, description)) pairs.
+Extract reviewed product IDs from the review file.
+Collect and broadcast the reviewed IDs to all workers.
+On each worker, filter out products that have been reviewed.
+Further filter to only products in the "Kitchen" category.
+Map descriptions to their word counts.
+Count matching products and reduce to sum total words.
+Compute the average and write the result to output.txt.
