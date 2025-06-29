@@ -35,3 +35,18 @@ The code loads product and review data, filters out reviewed products, and calcu
     --class de.tuberlin.deem.tht.TaskJava \
     --master local[*] /app/jar/takehometest-1.0-SNAPSHOT.jar
    ```
+##  Spark Execution Steps
+The code performs the following steps using Apache Spark:
+
+- Load products.tsv and reviews.tsv into RDDs.
+- Filter out header lines from both datasets.
+- Parse products into (productId, (category, description)) pairs.
+- Parse reviewed product IDs from the reviews file.
+- Tag each review ID as "REVIEWED" and each product with "PRODUCT\tcategory\tdescription".
+- Union both tagged RDDs into one dataset.
+- Group all entries by productId using groupByKey (causing a shuffle).
+- For each group, filter to keep only products without a "REVIEWED" tag.
+- Filter remaining entries to only those with "Kitchen" category.
+- Map each description to its word count.
+- Count the number of matching products and reduce to sum total words.
+- Compute the average word count and write results to output.txt.
