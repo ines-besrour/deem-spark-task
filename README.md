@@ -13,14 +13,14 @@
    ```bash
    docker pull bitnami/spark:latest
    ```
-   2. **Build the Maven project**  
+2. **Build the Maven project**  
    Run the following command to package the Java application:
 
    ```bash
    mvn clean package
    ```
 
-   3. Run the Spark job using Docker
+3. Run the Spark job using Docker
    Use the following command to execute the Spark job:
    ```bash
    docker run --rm -it \
