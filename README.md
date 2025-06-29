@@ -1,5 +1,7 @@
 # deem-spark-task
 
+The code loads product and review data, filters out reviewed products, and calculates the average word count of “Kitchen” product descriptions without reviews. It then writes the result and runtime to an output file.
+
 ## Requirements
 - JDK 8 or later
 - Docker
