@@ -33,10 +33,40 @@ public class TaskJava {
                 .filter(line -> !line.startsWith("id"))
                 .map(line -> line.split("\t")[0]);
 
-        JavaPairRDD<String, Void> reviewedPairs = reviewedProductIds.mapToPair(id -> new Tuple2<>(id, null));
+        JavaPairRDD<String, String> reviewedTagged = reviewedProductIds
+                .mapToPair(id -> new Tuple2<>(id, "REVIEWED"));
 
-        JavaPairRDD<String, Tuple2<String, String>> productsWithoutReview =
-                products.subtractByKey(reviewedPairs);
+        JavaPairRDD<String, String> productsTagged = products
+                .mapToPair(entry -> {
+                    Tuple2<String, String> val = entry._2;
+                    return new Tuple2<>(entry._1, "PRODUCT\t" + val._1 + "\t" + val._2);
+                });
+
+        JavaPairRDD<String, String> union = reviewedTagged.union(productsTagged);
+
+        JavaPairRDD<String, Iterable<String>> grouped = union.groupByKey();
+
+        JavaPairRDD<String, Tuple2<String, String>> productsWithoutReview = grouped.flatMapToPair(entry -> {
+            boolean isReviewed = false;
+            Tuple2<String, String> productData = null;
+
+            for (String value : entry._2) {
+                if (value.equals("REVIEWED")) {
+                    isReviewed = true;
+                } else if (value.startsWith("PRODUCT")) {
+                    String[] parts = value.split("\t", 3);
+                    if (parts.length == 3) {
+                        productData = new Tuple2<>(parts[1], parts[2]);
+                    }
+                }
+            }
+
+            if (!isReviewed && productData != null) {
+                return java.util.Collections.singletonList(new Tuple2<>(entry._1, productData)).iterator();
+            } else {
+                return java.util.Collections.emptyIterator();
+            }
+        });
 
         JavaRDD<Integer> kitchenWordCounts = productsWithoutReview
                 .filter(product -> product._2._1.equals("Kitchen"))
